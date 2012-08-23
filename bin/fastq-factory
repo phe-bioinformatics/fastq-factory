@@ -25,10 +25,6 @@ sample_map = extract_file_prefixes_and_sample_name(options[:sample_map_file], op
 sample_map.keys.each do |sample_prefix|
   file_exists?("#{sample_prefix}#{options[:forward_reads_suffix]}", options[:directory])
   file_exists?("#{sample_prefix}#{options[:reverse_reads_suffix]}", options[:directory])
-  if options[:metrics]
-    file_exists?("#{sample_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", options[:directory])
-    file_exists?("#{sample_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", options[:directory])
-  end
 end
 if options[:trim]
   fastq_quality_trimmer_path = find_executable("fastq_quality_trimmer", options[:fastq_quality_trimmer_dir])
