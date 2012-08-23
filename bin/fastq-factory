@@ -1,0 +1,44 @@
+#! /usr/bin/env ruby
+if ENV['fastq_factory_test_libpath']
+  $LOAD_PATH.unshift(ENV['fastq_factory_test_libpath']) # read in lib path if testing
+end
+require 'fastq-factory'
+gem "trollop", "~> 2.0"
+require 'trollop'
+options = Trollop::options do
+  opt :trim, "Trim fastq files"
+  opt :metrics, "Produce quality metrics"
+  opt :directory, "The full path to thedirectory where the fastq and sample map files are stored", :type => :string, :required => true
+  opt :sample_map_file, "A file that where each line is tab-delimited filename_prefix and sample name e.g H113880160-S2-E1_S3_L001\\tH113880160", :type => :string, :required => true
+  opt :forward_reads_suffix, "The suffix for the forward read files such that the prefix listed in the sample map file and the suffic combined will make up the complete fastq filename", :type => :string, :required => true
+  opt :reverse_reads_suffix, "The suffix for the forward read files such that the prefix listed in the sample map file and the suffic combined will make up the complete fastq filename", :type => :string, :required => true
+  opt :quality_scale, "The Phred quality scale, 33 or 64", :type => :integer, :required => true
+  opt :fastq_quality_trimmer_dir, "The directory where fastq_quality_trimmer can be found", :short => "-F", :type => :string
+  opt :quake_dir, "The directory where the quake executable can be found", :short => "-Q", :type => :string
+end
+
+forward_reads_suffix, forward_reads_file_extension = options[:forward_reads_suffix].match(/(.+)\.(.+?)$/).captures
+reverse_reads_suffix, reverse_reads_file_extension = options[:reverse_reads_suffix].match(/(.+)\.(.+?)$/).captures
+
+sample_map = extract_file_prefixes_and_sample_name(options[:sample_map_file], options[:directory])
+# check sequence files exist
+sample_map.keys.each do |sample_prefix|
+  file_exists?("#{sample_prefix}#{options[:forward_reads_suffix]}", options[:directory])
+  file_exists?("#{sample_prefix}#{options[:reverse_reads_suffix]}", options[:directory])
+  if options[:metrics]
+    file_exists?("#{sample_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", options[:directory])
+    file_exists?("#{sample_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", options[:directory])
+  end
+end
+if options[:trim]
+  fastq_quality_trimmer_path = find_executable("fastq_quality_trimmer", options[:fastq_quality_trimmer_dir])
+  abort ("Can not find fastq_quality_trimmer. You can specifiy the directory where this can be found using the -F option") unless fastq_quality_trimmer_path
+  quake_path = find_executable("quake.py", options[:quake_dir])
+  abort ("Can not find quake.py. You can specifiy the directory where this can be found using the -Q option") unless quake_path
+  write_out_fastq_trim_script
+  trim_and_correct_fastqs(sample_map, options[:directory], forward_reads_suffix, forward_reads_file_extension, reverse_reads_suffix, reverse_reads_file_extension, options[:quality_scale], fastq_quality_trimmer_path, quake_path)
+end
+
+if options[:metrics]
+  generate_quality_metrics(sample_map, options[:directory], options[:forward_reads_suffix], options[:reverse_reads_suffix], options[:quality_scale])
+end

@@ -17,10 +17,11 @@ Jeweler::Tasks.new do |gem|
   gem.name = "fastq-factory"
   gem.homepage = "http://github.com/hpa-bioinformatics/fastq-factory"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{A tool to process and QC fastq files from illumina machines}
+  gem.description = %Q{This tool can process fastq files, using fastq_quality_trimmer and quake to correct fastq files and then provide a quality asssessment of the data}
   gem.email = "anthony.underwood@hpa.org.uk"
   gem.authors = ["Anthony Underwood"]
+  gem.executables = ["fastq-factory"]
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
