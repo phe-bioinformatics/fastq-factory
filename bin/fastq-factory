@@ -40,5 +40,9 @@ if options[:trim]
 end
 
 if options[:metrics]
+  sample_map.keys.each do |sample_prefix|
+    file_exists?("#{sample_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", options[:directory])
+    file_exists?("#{sample_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", options[:directory])
+  end
   generate_quality_metrics(sample_map, options[:directory], options[:forward_reads_suffix], options[:reverse_reads_suffix], options[:quality_scale])
 end
