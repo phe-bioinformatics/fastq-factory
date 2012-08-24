@@ -3,8 +3,9 @@ include FastqAssessment
 require 'miseq_run_stats'
 include MiseqRunStats
 
-def generate_quality_metrics(sample_map, directory, forward_reads_suffix, reverse_reads_suffix, quality_scale)
+def generate_quality_metrics(sample_map, directory, forward_reads_suffix, reverse_reads_suffix, quality_scale, quality_cutoff)
   if File.exists?("#{directory}/ResequencingRunStatistics.xml")
+    puts "Assessing quality from Miseq run stats file"
     resequencing_run_stats = parse_resequencing_run_stats("#{directory}/ResequencingRunStatistics.xml", sample_map.values)
   else
     resequencing_run_stats = ResequencingRunStats.new
@@ -20,13 +21,13 @@ def generate_quality_metrics(sample_map, directory, forward_reads_suffix, revers
 
 
   sample_map.each do |read_file_prefix, sample_name|
-    puts sample_name
+    puts "Assesing quality for #{sample_name}"
     resequencing_run_stats.sample_stats[sample_name].fastq_stats = Hash.new
-    resequencing_run_stats.sample_stats[sample_name].fastq_stats["forward"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{forward_reads_suffix}",quality_scale)
-    resequencing_run_stats.sample_stats[sample_name].fastq_stats["reverse"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{reverse_reads_suffix}",quality_scale)
-    resequencing_run_stats.sample_stats[sample_name].fastq_stats["forward-trim_corrected"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{forward_reads_trimmed_corrected_suffix}",quality_scale)
+    resequencing_run_stats.sample_stats[sample_name].fastq_stats["forward"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{forward_reads_suffix}",quality_scale, quality_cutoff)
+    resequencing_run_stats.sample_stats[sample_name].fastq_stats["reverse"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{reverse_reads_suffix}",quality_scale, quality_cutoff)
+    resequencing_run_stats.sample_stats[sample_name].fastq_stats["forward-trim_corrected"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{forward_reads_trimmed_corrected_suffix}",quality_scale, quality_cutoff)
     resequencing_run_stats.sample_stats[sample_name].fastq_stats["forward-trim_corrected"].percentage_compared_to_raw = percentage_compared_to_raw("#{directory}/#{read_file_prefix}#{forward_reads_trimmed_corrected_suffix}", "#{directory}/#{read_file_prefix}#{forward_reads_suffix}")
-    resequencing_run_stats.sample_stats[sample_name].fastq_stats["reverse-trim_corrected"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{reverse_reads_trimmed_corrected_suffix}",quality_scale)
+    resequencing_run_stats.sample_stats[sample_name].fastq_stats["reverse-trim_corrected"] = generate_quality_stats_for_read("#{directory}/#{read_file_prefix}#{reverse_reads_trimmed_corrected_suffix}",quality_scale, quality_cutoff)
     resequencing_run_stats.sample_stats[sample_name].fastq_stats["reverse-trim_corrected"].percentage_compared_to_raw = percentage_compared_to_raw("#{directory}/#{read_file_prefix}#{reverse_reads_trimmed_corrected_suffix}", "#{directory}/#{read_file_prefix}#{reverse_reads_suffix}")
   end
   # print out data
