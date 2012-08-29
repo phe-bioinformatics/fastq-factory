@@ -23,29 +23,37 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
     `#{quake_path} -f quake_file_list.txt -k 15 -q #{quality_scale}`
   end
   sample_map.each do |sample_file_prefix, sample_name|
-    `perl /Volumes/NGS2_DataRAID/projects/MRSA/scripts/fastq-remove-orphans.pl -1 paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension} -2 paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}`
+    if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+      `perl /Volumes/NGS2_DataRAID/projects/MRSA/scripts/fastq-remove-orphans.pl -1 paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension} -2 paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}`
+    end
   end
 
   # cleanup and rename files
+
   sample_map.each do |sample_file_prefix, sample_name|
-    system("rm #{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
-    system("rm #{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
-    system("rm paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
-    system("rm paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
-    system("rm orphaned_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
-    system("rm orphaned_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
-    system("rm error_model.paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.txt")
-    system("rm error_model.paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.txt")
-    system("rm paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.stats.txt")
-    system("rm paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor_single.#{forward_reads_file_extension}")
-    system("rm paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.stats.txt")
-    system("rm paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor_single.#{forward_reads_file_extension}")
-    system("rm paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
-    system("rm paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
-    system("rm orphaned_paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
-    system("rm orphaned_paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
-    system("mv paired_paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension} #{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
-    system("mv paired_paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension} #{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
+    File.delete("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    File.delete("#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
+    File.delete("orphaned_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    File.delete("orphaned_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
+    if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+      File.delete("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+      File.delete("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
+      File.delete("error_model.paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.txt")
+      File.delete("error_model.paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.txt")
+      File.delete("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.stats.txt")
+      File.delete("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor_single.#{forward_reads_file_extension}")
+      File.delete("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.stats.txt")
+      File.delete("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor_single.#{forward_reads_file_extension}")
+      File.delete("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+      File.delete("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
+      File.delete("orphaned_paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+      File.delete("orphaned_paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
+      File.rename("paired_paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", "#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+      File.rename("paired_paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", "#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
+    else
+      File.rename("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}", "#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+      File.rename("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}", "#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
+    end
   end
 end
 

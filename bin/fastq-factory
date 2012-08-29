@@ -26,8 +26,8 @@ reverse_reads_suffix, reverse_reads_file_extension = options[:reverse_reads_suff
 sample_map = extract_file_prefixes_and_sample_name(options[:sample_map_file], options[:directory])
 # check sequence files exist
 sample_map.keys.each do |sample_prefix|
-  file_exists?("#{sample_prefix}#{options[:forward_reads_suffix]}", options[:directory])
-  file_exists?("#{sample_prefix}#{options[:reverse_reads_suffix]}", options[:directory])
+  file_exists?(options[:directory], "#{sample_prefix}#{options[:forward_reads_suffix]}")
+  file_exists?(options[:directory], "#{sample_prefix}#{options[:reverse_reads_suffix]}")
 end
 if options[:trim]
   fastq_quality_trimmer_path = find_executable("fastq_quality_trimmer", options[:fastq_quality_trimmer_dir])
@@ -40,8 +40,8 @@ end
 
 if options[:metrics]
   sample_map.keys.each do |sample_prefix|
-    file_exists?("#{sample_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", options[:directory])
-    file_exists?("#{sample_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", options[:directory])
+    file_exists?(options[:directory], "#{sample_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}", "#{sample_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    file_exists?(options[:directory], "#{sample_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}", "#{sample_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
   end
   generate_quality_metrics(sample_map, options[:directory], options[:forward_reads_suffix], options[:reverse_reads_suffix], options[:quality_scale], options[:metrics_quality_cutoff])
 end

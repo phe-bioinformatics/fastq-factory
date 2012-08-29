@@ -10,8 +10,12 @@ def extract_file_prefixes_and_sample_name(sample_map_file, directory)
   return sample_map
 end
 
-def file_exists?(filename, directory)
-  abort("You specified a fastq file : #{filename}. This does not exist! Please check your sample map file") unless File.exists?("#{directory}/#{filename}")
+def file_exists?(directory, *filenames)
+  at_least_one_file_found = false
+  filenames.each do |filename|
+    at_least_one_file_found = true  if File.exists?("#{directory}/#{filename}")
+  end
+  abort("You specified a file(s): #{filenames.join(", ")}. At least one of these must exist! Please check your sample map file") unless at_least_one_file_found
 end
 
 def find_executable(executable_name, directory = nil)
