@@ -8,7 +8,7 @@ require 'trollop'
 options = Trollop::options do
   opt :trim, "Trim fastq files"
   opt :metrics, "Produce quality metrics"
-  opt :directory, "The full path to thedirectory where the fastq and sample map files are stored", :type => :string, :required => true
+  opt :directory, "The full path to the directory where the fastq and sample map files are stored", :type => :string, :required => true
   opt :sample_map_file, "A file that where each line is tab-delimited filename_prefix and sample name e.g H113880160-S2-E1_S3_L001\\tH113880160", :type => :string, :required => true
   opt :forward_reads_suffix, "The suffix for the forward read files such that the prefix listed in the sample map file and the suffic combined will make up the complete fastq filename", :type => :string, :required => true
   opt :reverse_reads_suffix, "The suffix for the forward read files such that the prefix listed in the sample map file and the suffic combined will make up the complete fastq filename", :type => :string, :required => true
@@ -17,7 +17,7 @@ options = Trollop::options do
   opt :quake_dir, "The directory where the quake executable can be found", :short => "-Q", :type => :string
   opt :trim_point_fraction, "The fraction of the read length below which a read will be discarded if it is shorter than teh value after trimming", :short => "-T", :type => :float, :default => 0.6
   opt :trim_quality_cutoff, "The quality used as a cutoff with which to trim a read from the 3' end", :short => "-E", :type => :integer, :default => 20
-  opt :metrics_quality_cutoff, "The quality value which will be used to determine at which position the read falls below this valeu in a 5 position window", :short => "-W", :type => :integer, :default => 30
+  opt :metrics_quality_cutoff, "The quality value which will be used to determine at which position the read falls below this value in a 5 position window", :short => "-W", :type => :integer, :default => 30
 end
 
 forward_reads_suffix, forward_reads_file_extension = options[:forward_reads_suffix].match(/(.+)\.(.+?)$/).captures
