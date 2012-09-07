@@ -2,7 +2,7 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   Dir.chdir(directory)
   # trimming
   sample_map.each do |sample_file_prefix, sample_name|
-    next if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    next if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}") || File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
     puts "Trimming files for #{sample_name}"
     #determine read length
     read_length = calculate_read_length("#{directory}/#{sample_file_prefix}#{forward_reads_suffix}.#{forward_reads_file_extension}")
