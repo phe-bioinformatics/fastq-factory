@@ -2,6 +2,7 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   Dir.chdir(directory)
   # trimming
   sample_map.each do |sample_file_prefix, sample_name|
+    next if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
     puts "Trimming files for #{sample_name}"
     #determine read length
     read_length = calculate_read_length("#{directory}/#{sample_file_prefix}#{forward_reads_suffix}.#{forward_reads_file_extension}")
@@ -15,6 +16,7 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   #  quake correction
   # write file for quake
   sample_map.each do |sample_file_prefix, sample_name|
+    next if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}") || File.exists?(("paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}"))
     puts "Error correcting files for #{sample_name}"
     output_file = File.open("quake_file_list.txt","w")
     output_file.puts "paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension} paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}"
@@ -23,9 +25,9 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
     `#{quake_path} -f quake_file_list.txt -k 15 -q #{quality_scale}`
   end
   sample_map.each do |sample_file_prefix, sample_name|
-    if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
-      `perl /Volumes/NGS2_DataRAID/projects/MRSA/scripts/fastq-remove-orphans.pl -1 paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension} -2 paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}`
-    end
+    next if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+    # remove orphans
+    `perl /tmp/fastq-remove-orphans.pl -1 paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension} -2 paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}`
   end
 
   # cleanup and rename files
