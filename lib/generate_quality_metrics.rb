@@ -6,7 +6,7 @@ include MiseqRunStats
 def generate_quality_metrics(sample_map, directory, forward_reads_suffix, reverse_reads_suffix, quality_scale, quality_cutoff)
   if File.exists?("#{directory}/ResequencingRunStatistics.xml")
     puts "Assessing quality from Miseq run stats file"
-    run_stats = parse_run_stats("#{directory}/ResequencingRunStatistics.xml", sample_map.values)
+    run_stats = parse_resequencing_run_stats("#{directory}/ResequencingRunStatistics.xml", sample_map.values)
   elsif File.exists?("#{directory}/AssemblyRunStatistics.xml")
     puts "Assessing quality from Miseq run stats file"
     run_stats = parse_assembly_run_stats("#{directory}/AssemblyRunStatistics.xml", sample_map.values)
