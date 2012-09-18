@@ -106,8 +106,8 @@ my $paired;
 print STDERR "\nPrinting paired reads...\n";
 for $ident (keys %sequences_1) {
   if (exists $sequences_2{$ident}) {
-    print PAIRED1 "\@${ident} 1\n$sequences_1{$ident}\n\+${ident}1\n$qualities_1{$ident}\n";
-    print PAIRED2 "\@${ident} 2\n$sequences_2{$ident}\n\+${ident}2\n$qualities_2{$ident}\n";
+    print PAIRED1 "\@${ident} 1\n$sequences_1{$ident}\n\+${ident} 1\n$qualities_1{$ident}\n";
+    print PAIRED2 "\@${ident} 2\n$sequences_2{$ident}\n\+${ident} 2\n$qualities_2{$ident}\n";
     delete $sequences_1{$ident};
     delete $sequences_2{$ident};
     $paired++;
@@ -117,13 +117,13 @@ for $ident (keys %sequences_1) {
 print STDERR "\nPrinting orphaned reads...\n";
 my $orphaned_1;
 for $ident (keys %sequences_1) {
-  print ORPHANED1  "\@${ident} 1\n$sequences_1{$ident}\n\+${ident}1\n$qualities_1{$ident}\n";
+  print ORPHANED1  "\@${ident} 1\n$sequences_1{$ident}\n\+${ident} 1\n$qualities_1{$ident}\n";
   $orphaned_1++;
 }
 
 my $orphaned_2;
 for $ident (keys %sequences_2) {
-  print ORPHANED2  "\@${ident} 2\n$sequences_2{$ident}\n\+${ident}2\n$qualities_2{$ident}\n";
+  print ORPHANED2  "\@${ident} 2\n$sequences_2{$ident}\n\+${ident} 2\n$qualities_2{$ident}\n";
   $orphaned_2++
 }
 
