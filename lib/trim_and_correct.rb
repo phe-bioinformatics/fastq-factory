@@ -2,14 +2,15 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   Dir.chdir(directory)
   # trimming
   sample_map.each do |sample_file_prefix, sample_name|
-    next if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}") || File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    next if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}") || File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
     puts "Trimming files for #{sample_name}"
     #determine read length
     read_length = calculate_read_length("#{directory}/#{sample_file_prefix}#{forward_reads_suffix}.#{forward_reads_file_extension}")
     trim_point = (trim_point_fraction * read_length).to_i
-
-    `#{fastq_quality_trimmer_path} -i #{directory}/#{sample_file_prefix}#{forward_reads_suffix}.#{forward_reads_file_extension} -o #{directory}/#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension} -t #{trim_quality_cutoff} -l #{trim_point} -Q #{quality_scale} -v`
-    `#{fastq_quality_trimmer_path} -i #{directory}/#{sample_file_prefix}#{reverse_reads_suffix}.#{reverse_reads_file_extension} -o #{directory}/#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension} -t #{trim_quality_cutoff} -l #{trim_point} -Q #{quality_scale} -v`
+    unless File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+      `#{fastq_quality_trimmer_path} -i #{directory}/#{sample_file_prefix}#{forward_reads_suffix}.#{forward_reads_file_extension} -o #{directory}/#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension} -t #{trim_quality_cutoff} -l #{trim_point} -Q #{quality_scale} -v`
+      `#{fastq_quality_trimmer_path} -i #{directory}/#{sample_file_prefix}#{reverse_reads_suffix}.#{reverse_reads_file_extension} -o #{directory}/#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension} -t #{trim_quality_cutoff} -l #{trim_point} -Q #{quality_scale} -v`
+    end
     `perl /tmp/fastq-remove-orphans.pl -1 #{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension} -2 #{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}`
   end
 
@@ -33,7 +34,7 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   # cleanup and rename files
 
   sample_map.each do |sample_file_prefix, sample_name|
-    File.delete("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}") if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
+    File.delete("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}") if File.exists?("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
     File.delete("#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}") if File.exists?("#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
     File.delete("orphaned_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}") if File.exists?("orphaned_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
     File.delete("orphaned_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}") if File.exists?("orphaned_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
