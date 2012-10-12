@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "fastq-factory"
-  s.version = "0.1.14"
+  s.version = "0.1.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Anthony Underwood"]
-  s.date = "2012-10-11"
+  s.date = "2012-10-12"
   s.description = "This tool can process fastq files, using fastq_quality_trimmer and quake to correct fastq files and then provide a quality asssessment of the data"
   s.email = "anthony.underwood@hpa.org.uk"
   s.executables = ["fastq-factory"]
