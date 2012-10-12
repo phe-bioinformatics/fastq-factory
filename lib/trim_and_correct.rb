@@ -34,8 +34,8 @@ def trim_and_correct_fastqs(sample_map, directory, forward_reads_suffix, forward
   # cleanup and rename files
 
   sample_map.each do |sample_file_prefix, sample_name|
-    delete_file_with_dependencies("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}", "#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
-    delete_file_with_dependencies("#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}", "#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
+    delete_file_with_dependencies("#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}", "paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
+    delete_file_with_dependencies("#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}", "paired_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.cor.#{reverse_reads_file_extension}")
     delete_file_with_dependencies("orphaned_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.#{forward_reads_file_extension}")
     delete_file_with_dependencies("orphaned_#{sample_file_prefix}#{reverse_reads_suffix}.trimmed.#{reverse_reads_file_extension}")
     if File.exists?("paired_#{sample_file_prefix}#{forward_reads_suffix}.trimmed.cor.#{forward_reads_file_extension}")
